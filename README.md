@@ -18,7 +18,7 @@ lottofunc.js
 - Lotto_Edit > OpenEditFunc2 (連結當前頁面)
 ```javascript
 $(document).ready(function() {
-	OpenListFunc('/Hello1221/Lotto_List.jsp');
+    OpenListFunc('/Hello1221/Lotto_List.jsp');
 });
 ```
 ### Lotto_List
@@ -57,7 +57,7 @@ url: "/Hello1221/intro"
     - name 已存在
       - 維持不變
       - 調整名稱    
-```javasript
+```ajax
 var data = {
   action: "SignUp" ,
   keyword: keyword ,
@@ -69,7 +69,7 @@ var data = {
 - LoginFunc()
   - step1: verify data (空值、長度)
   - step2: 轉址 Lotto_Menu 
-```javasript
+```ajax
 var data = {
   action: "LogIn" ,
   email: $('#signup_email').val() ,
@@ -82,7 +82,7 @@ url: "/Hello1221/lotto"
   - step1: 接收兩個值(一組號碼 ,特別號)
   - step2: ","切割後for迴圈 ,亂數產生的號碼將依序會被放入div ,Swal
   - step3: 重整頁面
-```javasript
+```ajax
 var data = {
   action: "Today"
 }
@@ -99,7 +99,7 @@ url: "/Hello1221/lotto"
     - 自選號 
     - 解夢描述產生的號碼 
     - 英轉數的號碼 
-```javasript
+```ajax
 var data = {
   action: "UserRandomBall"
 }
@@ -109,7 +109,7 @@ var data = {
   - step2: 
     - 顯示1: ","切割後for迴圈 ,相對應名詞比對資料庫數據產生的號碼將依序會被放入div
     - 顯示2: 下面按鈕 checked=true
-```javasript
+```ajax
 var data = {
   action: "CallTheGodOfWealth",
   describeStr: $("#v-pills-letDream-tab").val()
@@ -120,7 +120,7 @@ var data = {
   - step2: 
     - 顯示1: ","切割後for迴圈 ,依照 A:1 to Z:26 的規則將數字被放入div
     - 顯示2: 下面按鈕 checked=true
-```javasript
+```ajax
 var data = {
    action: "EnTransToNum",
    func: "GOOGLE",
@@ -132,7 +132,7 @@ var data = {
   - step2: 
     - 顯示1: ","切割後for迴圈 ,依照 A:1 to Z:26 的規則將數字被放入div
     - 顯示2: 下面按鈕 checked=true
-```javasript
+```ajax
 var data = {
    action: "ENNUM",
    func: "GOOGLE",
@@ -145,7 +145,7 @@ var data = {
     - 顯示1: ","切割後for迴圈 ,將數字被放入div
     - 顯示2: 下面按鈕 checked=true
   - step3: 取消號碼 
-```javasript
+```ajax
 var data = {
    action: "ChooseBall",
    ball: ball,
@@ -156,7 +156,7 @@ var data = {
   - step1: 抓checked 
   - step2: verify data (總數)
   - step3: 回首頁 (Lotto_List 列表)
-```javasript
+```ajax
 var data = {
    action: "Buy",
    value: cbxVehicle
@@ -166,7 +166,7 @@ var data = {
   - step1: verify data (數量>0)
   - step2: list to arr
   - step3: 回首頁 (Lotto_List 列表)
-```javasript
+```ajax
 var data = {
    action: "fastRandomBuy",
    value: $('#v-pills-fastbuy-tab').val()
