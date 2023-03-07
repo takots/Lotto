@@ -41,6 +41,7 @@ $(document).ready(function() {
   
 ### Lotto_DreamList
 描述列表
+- service.selectAllDescribe(OrgId) > 查詢使用者所有描述
 
 ## js
 ### intro.js
