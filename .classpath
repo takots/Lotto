@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/webapp/WEB-INF/lib"/>
+	<classpathentry kind="src" path="src/test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/sqljdbc42.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/jaxb-api-2.3.1.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/log4j-api-2.19.0.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/log4j-core-2.19.0.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/org-apache-commons-codec.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Lottery0208/src/main/webapp/WEB-INF/lib/lombok.jar"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/junit-jupiter-api-5.9.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="D:/springboot/Work_Java_eclipse/Hello1221/src/main/webapp/WEB-INF/lib/jsoup-1.15.4.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

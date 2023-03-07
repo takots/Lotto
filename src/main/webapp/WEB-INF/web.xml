@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+	<servlet>
+		<servlet-name>LottoServlet</servlet-name>
+		<servlet-class>com.lotto.controller.LottoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LottoServlet</servlet-name>
+		<url-pattern>/lotto</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>UserServlet</servlet-name>
+		<servlet-class>com.user.controller.UserServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserServlet</servlet-name>
+		<url-pattern>/intro</url-pattern>
+	</servlet-mapping>
+	<!-- 
+	<display-name>UserServlet_Filter</display-name>
+	  <welcome-file-list>
+	      <welcome-file>index.jsp</welcome-file>
+	  </welcome-file-list>
+  
+  	 <filter>
+	      <filter-name>filter1</filter-name>
+	      <filter-class>com.lottery.controller.UserServlet_Login</filter-class>
+  	 </filter>
+	  <filter-mapping>
+	      <filter-name>filter1</filter-name>
+	      <url-pattern>/lottery/controller/UserServlet_Login</url-pattern>
+	  </filter-mapping>
+	 -->
+</web-app>
+
+
