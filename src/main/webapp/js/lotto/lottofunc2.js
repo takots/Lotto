@@ -17,56 +17,23 @@ function ReplenishNumFunc() { // 補齊號碼
 		dataType: "json",
 		data: { "action": "UserRandomBall" },
 		success: function(response) {
-			// 	            alert(response.randomBall);
-			var arr = response.randomBall.split(",");
 			var str = "";
-			//			alert("response.randomBall> " + response.randomBall)
-			for (var i = 0; i < arr.length; i++) {
-				if (i > 0) {
-					str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
-					$('#cb_ball' + arr[i]).prop('checked', true);
-					$('#ball' + arr[i]).css({
-						"background": "#feba28",
-						"color": "black"
-					})
-				}
-			}
-			//            alert("response.chooseBall> " + response.chooseBall);
-			var arr = response.chooseBall.split(",");
-			for (var i = 0; i < arr.length; i++) {
-				if (i > 0) {
-					$('#cb_ball' + arr[i]).prop('checked', true);
-					$('#ball' + arr[i]).css({
-						"background": "#feba28",
-						"color": "black"
-					})
+			if(response !== null){
+				var arr = response.split(",");
+				for (var i = 0; i < arr.length; i++) {
+					if (i > 0) {
+						str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
+						$('#cb_ball' + arr[i]).prop('checked', true);
+						$('#ball' + arr[i]).css({
+							"background": "#feba28",
+							"color": "black"
+						})
+					}
 				}
 			}
 			if (str !== '') {
 				str = "你產生的號碼： " + str;
 				$("#v-pills-replenish").html(str);
-			}
-			//			alert("response.dreamBall> " + response.dreamBall);
-			var arr = response.dreamBall.split(",");
-			for (var i = 0; i < arr.length; i++) {
-				if (i > 0) {
-					$('#cb_ball' + arr[i]).prop('checked', true);
-					$('#ball' + arr[i]).css({
-						"background": "#feba28",
-						"color": "black"
-					})
-				}
-			}
-			//			alert("response.ennumBall> " + response.ennumBall);
-			var arr = response.ennumBall.split(",");
-			for (var i = 0; i < arr.length; i++) {
-				if (i > 0) {
-					$('#cb_ball' + arr[i]).prop('checked', true);
-					$('#ball' + arr[i]).css({
-						"background": "#feba28",
-						"color": "black"
-					})
-				}
 			}
 		},
 		error: function() {
@@ -86,11 +53,9 @@ function DreamComeNumFunc() {
 		data: { "action": "CallTheGodOfWealth", "describeStr": $("#v-pills-letDream-tab").val() },
 		dataType: "html",
 		success: function(response) {
+			var str = "";
 			if (response !== '') {
-				response = response.substr(0, response.length - 1);
-				Swal.fire(response);
-				var arr = response.split(",");
-				var str = "";
+				var arr = response.split(","); // ,1,2,3,4
 				for (var i = 0; i < arr.length; i++) {
 					if (i > 0) {
 						str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
@@ -138,10 +103,12 @@ function GoogleTransFunc() {
 					})
 				}
 			}
-			$("#v-pills-googleTranslate").html($("#v-pills-googleTranslate-tab").val() + ": " + response.split("#")[1]);
+			var str2 = $("#v-pills-googleTranslate-tab").val() + ": " + response.split("#")[1];
 			if (str !== '') {
-				str = "你產生的號碼： " + str;
-				$("#v-pills-englishToNumber").html(str);
+				str = "<br>你產生的號碼： " + str;
+				$("#v-pills-googleTranslate").html(str2 + str);
+			}else{
+				$("#v-pills-googleTranslate").html(str2);
 			}
 		},
 		error: function() {
@@ -211,70 +178,6 @@ function chooseBallFunc(ball) {
 		type: "post",
 		url: "/Hello1221/lotto",
 		data: { "action": "ChooseBall", "ball": ball, "calculate": KEY },
-		dataType: "json", // 注意類型 html ,json
-		success: function(response) {
-			var str = "";
-			var arr = response.chooseBall.split(",");
-			for (var i = 0; i < arr.length; i++) {
-				if (i > 0 && i < arr.length - 1) {
-					str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
-				}
-			}
-			if (str !== '') {
-				str = "<br>你產生的號碼： " + str;
-				$("#v-pills-resultBuy").html(str);
-			} else {
-				$("#v-pills-resultBuy").html("");
-			}
-			str = "";
-			if (response.randomBall !== null) {
-				// 		        alert("ran> " + response.randomBall);
-				var arr = response.randomBall.split(",");
-				for (var i = 0; i < arr.length; i++) {
-					if (i > 0 && i < arr.length - 1) {
-						str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
-					}
-				}
-				if (str !== '') {
-					str = "你產生的號碼： " + str;
-					$("#v-pills-replenish").html(str);
-				} else {
-					$("#v-pills-replenish").html("");
-				}
-			}
-			str = "";
-			//			alert("response.dreamBall> " + response.dreamBall);
-			if (response.dreamBall !== null) {
-				var arr = response.dreamBall.split(",");
-				for (var i = 0; i < arr.length; i++) {
-					if (i > 0 && i < arr.length - 1) {
-						str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
-					}
-				}
-				if (str !== '') {
-					str = "你產生的號碼： " + str;
-					$("#v-pills-letDream").html(str);
-				} else {
-					$("#v-pills-letDream").html("");
-				}
-			}
-			str = "";
-			//			alert("response.ennumBall> " + response.ennumBall);
-			if (response.ennumBall !== null) {
-				var arr = response.ennumBall.split(",");
-				for (var i = 0; i < arr.length; i++) {
-					if (i > 0 && i < arr.length - 1) {
-						str += "<div class=\"newbtn-list\" style=\"display:inline-block;\">" + arr[i] + "</div>&nbsp;&nbsp;";
-					}
-				}
-				if (str !== '') {
-					str = "你產生的號碼： " + str;
-					$("#v-pills-englishToNumber").html(str);
-				} else {
-					$("#v-pills-englishToNumber").html("");
-				}
-			}
-		},
 		error: function() {
 			alert("SetupError!");
 		}
@@ -347,9 +250,41 @@ function FastBuyFunc() {
 				str += "第" + i + "組號碼：" + r + "<br>";
 			});
 			Swal.fire("您隨機產生的" + x + "組號碼分別為：<br>" + str)
-			.then(() => {
-				$('#v-pills-home-tab').click();
-			});
+				.then(() => {
+					$('#v-pills-home-tab').click();
+				});
+		},
+		error: function() {
+		}
+	});
+}
+
+function RemoveFunc() {
+	var cbxVehicle1 = '';
+	$('input:checkbox:checked[name="cbball"]').each(function(i) { cbxVehicle1 += this.value + ','; });
+	var cbxVehicle2 = '';
+	$('input:checkbox:checked[name="removevalue"]').each(function(i) { cbxVehicle2 += this.value + ','; });
+	$.ajax({
+		type: "post",
+		url: "/Hello1221/lotto",
+		dataType: "json",
+		data: { "action": "Remove", "value": cbxVehicle1, "removevalue": cbxVehicle2 },
+		success: function(response) {
+			if (response.remove !== null) {
+				response.remove.split(",").forEach(function(ball) {
+					var cbball = $("#cb_ball" + ball).is(":checked");
+					if (cbball == true) {
+						$('#cb_ball' + ball).prop('checked', false);
+						$("#ball" + ball).css({
+							"background": "#6009f0",
+							"color": "#fff"
+						});
+					}
+				});
+			}
+			Swal.fire("排除的號碼是: " + response.remove
+					+ "<br>"
+					+ "保留的號碼是: " + response.keep);
 		},
 		error: function() {
 		}

@@ -38,20 +38,21 @@ public class LottoServlet extends HttpServlet {
 		// 產生今日樂透
 		if(action.equals("Today")) {
 			Map<String , String> map = new HashMap<>();
-			map.put("lotto", service.TODAY());
-			map.put("special", service.TODAYSPECIAL());
+			map.put("lotto", service.todayLotto());
+			map.put("special", service.todaySpecial());
 			JSONObject json = new JSONObject(map);
 			out.print(json); // 今天樂透數據
-//			service.GOLOTTO(); // 兌獎
-			service.countHowManyNumbers(); // 每個獎有誰
+//			service.goLotto(); // 兌獎
+			service.countNumbers(); // 每個獎有誰
 		}
 		
 		if(action.equals("ChooseBall")) {
-			String ball = "" , calculate = "";
+			String ball = "" , calculate = "" , value = "";
 	        ball = request.getParameter("ball");
 	        log("ball> " + ball);
 	    	calculate = request.getParameter("calculate"); // 是否取消這個號碼 KEY:minus ,Plus
-	    	out.print(service.saveSessionBall(session ,ball ,calculate)); // 回傳只是給ajax顯示用
+	    	value = request.getParameter("value"); // 是否取消這個號碼 KEY:minus ,Plus
+	    	service.saveSessionBall(session ,ball ,calculate);
 		}
 		
 		// 使用者點選後可以補齊 6 個數字
@@ -61,6 +62,7 @@ public class LottoServlet extends HttpServlet {
 			if(chooseball != null) {
 				sesschooseBall = chooseball.toString();
 			}
+			System.out.println("sesschooseBall> " + sesschooseBall);
 			out.print(service.replenishWithRandom(sesschooseBall));
 		}
 		
@@ -72,7 +74,7 @@ public class LottoServlet extends HttpServlet {
 			}
 			String describeStr = "" ,str = "";
 			describeStr = request.getParameter("describeStr");
-			System.out.println("describeStr> " + describeStr);
+			System.out.println("describeStr123> " + service.dreamNumber(OrgId, describeStr));
 			// 可能發生一個名詞都沒有對到的情況 ,需要返回訊息告知使用者
 			out.print(service.dreamNumber(OrgId, describeStr));
 		}
@@ -87,13 +89,13 @@ public class LottoServlet extends HttpServlet {
 			}
 			if(func.equals("GOOGLE")) { // google翻譯後轉成英文再轉成數字
 				try {
-					DescribeVO vo = service.enTONum(1 ,service.googleTranslate(str) ,OrgId); 
+					DescribeVO vo = service.englishToNumber(1 ,service.googleTranslate(str) ,OrgId); 
 					out.print(vo.getNumberStr()+"#"+vo.getContent());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}else if(func.equals("ENNUM")) {
-				DescribeVO vo = service.enTONum(2 ,str ,OrgId); 
+				DescribeVO vo = service.englishToNumber(2 ,str ,OrgId); 
 				out.print(vo.getNumberStr());
 			}
 		}
@@ -106,10 +108,10 @@ public class LottoServlet extends HttpServlet {
 			}
 			String str = "";
 			str = request.getParameter("value");
-			if (service.buySixNumber(str).getBoolean("sum")) { // 判斷號碼是6個
-				out.print(service.BUY(OrgId, str));
+			if (service.isSixNumber(str).getBoolean("sum")) { // 判斷號碼是6個
+				out.print(service.buyLotto(OrgId, str));
 			} else {
-				out.print(service.buySixNumber(str));
+				out.print(service.isSixNumber(str));
 			}
 		}
 		
@@ -120,7 +122,14 @@ public class LottoServlet extends HttpServlet {
 			}
 			int i = 0;
 			i = Integer.parseInt(request.getParameter("value"));
-			out.print(service.FastRandomBuy(OrgId, i));
+			out.print(service.fastRandomBuy(OrgId, i));
+		}
+		
+		if(action.equals("Remove")) {
+			String str1 = "" , str2 = "";
+			str1 = request.getParameter("value");
+			str2 = request.getParameter("removevalue");
+			out.print(service.removeNumber(str1 ,str2));
 		}
 	}
 

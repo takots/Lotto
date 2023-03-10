@@ -46,45 +46,45 @@ public class LottoTest {
 
 	@Test
 	public void todayLottery() {
-		assertNotNull(service.TODAY());
+		assertNotNull(service.todayLotto());
 	}
 
 	@Test
 	public void todaySpecial() {
-		assertNotNull(service.TODAYSPECIAL());
+		assertNotNull(service.todaySpecial());
 	}
 
 	@Test
 	public void buyLottery_v2() { // sess ,str
 		for(int i=0 ;i<=5 ; i++) {
-			assertTrue(service.BUY(3,service.randomSixNumber()));
+			assertTrue(service.buyLotto(3,service.randomSixNumber()));
 		}
 	}
 
 	@Test
 	public void BuySixNumber() {
 		String str = "5,13,39";
-		System.out.println(service.buySixNumber(str));
+		System.out.println(service.isSixNumber(str));
 	}
 
 	@Test
 	public void selectTodayLottery() {
-		assertNotNull(service.SELECTODAY());
+		assertNotNull(service.selectTodayLotto());
 	}
 
 	@Test
 	public void timeup() throws ParseException {
-		assertFalse(service.TIMEUP());
+		assertFalse(service.timeup());
 	}
 
 	@Test
 	public void timeupGoLottery() {
-		service.GOLOTTERY();
+		service.goLotto();
 	}
 
 	@Test
 	public void letsCount() {
-		service.countHowManyNumbers();
+		service.countNumbers();
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class LottoTest {
 
 	@Test
 	public void EnTONum() {
-		service.enTONum(1, "wklewq" ,3);
+		service.englishToNumber(1, "wklewq" ,3);
 	}
 	
 	@Test
@@ -116,7 +116,7 @@ public class LottoTest {
 	
 	@Test
 	public void fastBuy() {
-		List list = service.FastRandomBuy(50 ,5);
+		List list = service.fastRandomBuy(50 ,5);
 		System.out.println(list);
 	}
 }

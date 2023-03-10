@@ -67,7 +67,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public String todayLotto(String str) {
+	public String createTodayLotto(String str) {
 		// str 是隨機產生的6個號碼
 		LinkToMySQL();
 		PreparedStatement pstmt = null;
@@ -103,7 +103,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public void todaySpecial(String str) {
+	public void createTodaySpecial(String str) {
 		LinkToMySQL();
 		PreparedStatement pstmt = null;
 		String today = date.ToDay();
@@ -130,7 +130,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public boolean buyLotto_v2(Integer OrgId, String str) {
+	public boolean insertUserBuyLotto(Integer OrgId, String str) {
 		LinkToMySQL();
 		String SqlStr = "";
 		String today = date.ToDay();
@@ -175,71 +175,8 @@ public class LottoDAOImpl implements LottoDAO {
 		return isBuy;
 	}
 
-	// x 這方法邏輯錯誤 ,不應該把"購買"跟"兌獎"寫在一起 所以更新了 v2
 	@Override
-	public LottoVO buyLotto(String str) {
-		LinkToMySQL();
-		String SqlStr = "";
-		LottoVO vo = new LottoVO();
-		PreparedStatement pstmt = null;
-		String L_RecId = "", L_Lotto = "", B_Win = "";
-		Date date = new Date();
-		String today = date.ToDay();
-		int count = 0, B_Winnum = 0;
-		String OrgId = "";
-		try {
-			SqlStr = "SELECT TOP 1 L_RecId ,L_Lotto FROM lo_main WHERE L_RecDate BETWEEN '" + today + " 00:00:00'"
-					+ " AND '" + today + " 23:59:59'";
-			ReSetResult(SqlStr);
-			if (rs.next()) {
-				L_RecId = rs.getString("L_RecId");
-				L_Lotto = rs.getString("L_Lotto");
-			}
-			rs.close();
-			rs = null;
-			// 兌獎
-			if (!L_Lotto.equals("")) {
-				for (String v : str.split(",")) {
-					count++;
-					for (String s : L_Lotto.split(",")) {
-						if (v.equals(s)) {
-							B_Winnum++;
-							B_Win += v + ",";
-						}
-					}
-				}
-				B_Win = func.reSort(B_Win); // 排序已中獎號碼
-				if (!B_Win.equals(""))
-					B_Win = B_Win.substring(0, B_Win.length() - 1);
-			} else {
-				B_Winnum = 0;
-//				B_Win = "尚未開獎";
-			}
-			str = func.reSort(str); // 排序自選號碼
-			str = str.substring(0, str.length() - 1);
-			SqlStr = "INSERT INTO lo_bet (B_LRecId ,B_Bet ,B_Win ,B_Winnum ,B_BuildOrg) VALUES (?,?,?,?,?)";
-			pstmt = (PreparedStatement) conn.prepareStatement(SqlStr);
-			pstmt.setInt(1, Integer.parseInt(L_RecId));
-			pstmt.setString(2, str);
-			pstmt.setString(3, B_Win);
-			pstmt.setInt(4, B_Winnum);
-			pstmt.setInt(5, Integer.parseInt(OrgId));
-			pstmt.executeUpdate();
-			pstmt.close();
-			System.out.println("buyLotto SqlStr> " + SqlStr);
-		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
-		} finally {
-			sqlserver.closeResource(conn, rs, stmt, pstmt);
-		}
-		vo.setBet(str);
-		vo.setWin(B_Win);
-		vo.setWinnum(B_Winnum);
-		return vo;
-	}
-
-	@Override
-	public String selectTodayLotto() {
+	public String queryTodayLotto() {
 		LinkToMySQL();
 		Date date = new Date();
 		String today = date.ToDay();
@@ -263,7 +200,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public void timeupGoLotto() {
+	public void claimLotto() {
 		LinkToMySQL();
 		String SqlStr = "";
 		PreparedStatement pstmt = null;
@@ -281,18 +218,18 @@ public class LottoDAOImpl implements LottoDAO {
 			while (rs.next()) {
 				L_RecId = rs.getString("L_RecId");
 				L_Lotto = rs.getString("L_Lotto");
-				L_Lotto = L_Lotto.substring(1, L_Lotto.length()-1);
+				L_Lotto = L_Lotto.substring(1, L_Lotto.length() - 1);
 				L_Special = rs.getString("L_Special"); // 1,0
 				B_RecId = rs.getString("B_RecId");
 				B_Bet = rs.getString("B_Bet");
-				B_Bet = B_Bet.substring(1, B_Bet.length()-1);
+				B_Bet = B_Bet.substring(1, B_Bet.length() - 1);
 				if (!L_Lotto.equals("") && !B_Bet.equals("")) {
 					for (String v : B_Bet.split(",")) {
 						count++;
 						for (String s : L_Lotto.split(",")) {
 							if (v.equals(s)) {
 								B_Winnum++;
-								B_Win += "," + v ;
+								B_Win += "," + v;
 							}
 						}
 						if (v.equals(L_Special))
@@ -325,7 +262,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public void letsCount() {
+	public void updateLottoCount() {
 		LinkToMySQL();
 		String SqlStr = "";
 		PreparedStatement pstmt = null;
@@ -335,14 +272,12 @@ public class LottoDAOImpl implements LottoDAO {
 		String arr[] = { "", "", "", "", "", "" };
 		String L_RecId = "", B_RecId = "", B_Winnum = "";
 		try {
-			/* 數每組使用者號碼共中了幾個數字
-			 * 要使用此方法的需要滿足兩個條件
-			 * 1. 已存在今日號碼
-			 * 2. 有人購買
+			/*
+			 * 數每組使用者號碼共中了幾個數字 要使用此方法的需要滿足兩個條件 1. 已存在今日號碼 2. 有人購買
 			 */
 			SqlStr = " SELECT B_RecId ,B_LRecId ,B_Winnum FROM lo_main ,lo_bet"
-				   + " WHERE lo_main.L_RecId = lo_Bet.B_LRecId"
-				   + " AND (B_RecDate BETWEEN '" + today + " 00:00:00'" + " AND '" + today + " 23:59:59')";
+					+ " WHERE lo_main.L_RecId = lo_Bet.B_LRecId" + " AND (B_RecDate BETWEEN '" + today + " 00:00:00'"
+					+ " AND '" + today + " 23:59:59')";
 			ReSetResult(SqlStr);
 			System.out.println("letsCount SqlStr> " + SqlStr);
 			while (rs.next()) {
@@ -375,13 +310,13 @@ public class LottoDAOImpl implements LottoDAO {
 			}
 //			System.out.println(Arrays.toString(arr));
 //			System.out.println("arr.length> " + arr.length);
-			/* 不存在上述兩個條件 ,則select 不到 L_RecId 
-			 * 造成下面這句sql 去更新的過程中報錯
-			 * 所以加上 if(!L_RecId.equals(""))
+			/*
+			 * 不存在上述兩個條件 ,則select 不到 L_RecId 造成下面這句sql 去更新的過程中報錯 所以加上
+			 * if(!L_RecId.equals(""))
 			 */
-			if(!L_RecId.equals("")) {
+			if (!L_RecId.equals("")) {
 				for (int i = 0; i < arr.length; i++) {
-					System.out.println(i+" > " + arr[i]);
+					System.out.println(i + " > " + arr[i]);
 					SqlStr = "UPDATE lo_main SET L_get" + getStr[i] + "=? WHERE L_RecId=" + L_RecId;
 					pstmt = (PreparedStatement) conn.prepareStatement(SqlStr);
 					if (!arr[i].equals("")) {
@@ -404,7 +339,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public void SaveDreamData(String str) throws Exception {
+	public void saveDreamData(String str) throws Exception {
 		LinkToMySQL();
 		GoogleTranslate google = new GoogleTranslate();
 		String SqlStr = "", titleStr = "";
@@ -487,7 +422,7 @@ public class LottoDAOImpl implements LottoDAO {
 		String SqlStr = "";
 		String nameAndNumber = "";
 		String numStr = "";
-		String name = "", enname = "" , number = "";
+		String name = "", enname = "", number = "";
 		PreparedStatement pstmt = null;
 		boolean isNext = false;
 //		System.out.println("------------ findByDream ------------");
@@ -504,14 +439,14 @@ public class LottoDAOImpl implements LottoDAO {
 					isNext = true;
 					numStr += number + ",";
 					nameAndNumber = nameAndNumber + "," + name + ":" + number;
-				}else if (str.indexOf(enname) > -1) { // 區分 nameAndNumber
+				} else if (str.indexOf(enname) > -1) { // 區分 nameAndNumber
 					isNext = true;
 					numStr += number + ",";
 					nameAndNumber = nameAndNumber + "," + enname + ":" + number;
 				}
 			}
 			numStr = func.reSort(numStr);
-			if(isNext) {
+			if (isNext) {
 				nameAndNumber = nameAndNumber + ",";
 				numStr = numStr + ",";
 			}
@@ -531,11 +466,14 @@ public class LottoDAOImpl implements LottoDAO {
 		} finally {
 			sqlserver.closeResource(conn, rs, stmt, pstmt);
 		}
+		if (!numStr.equals("")) {
+			numStr = numStr.substring(0, numStr.length() - 1);
+		}
 		return numStr;
 	}
 
 	@Override
-	public void SaveEnNum(DescribeVO vo) {
+	public void saveEnglishAndNumber(DescribeVO vo) {
 		LinkToMySQL();
 		String SqlStr = "";
 		PreparedStatement pstmt = null;
@@ -558,12 +496,12 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public List<LottoVO> findAllBet(String day ,String orgid) {
+	public List<LottoVO> findAllBet(String day, String orgid) {
 		LinkToMySQL();
 		List<LottoVO> list = new ArrayList<LottoVO>();
 		LottoVO vo = null;
-		String SqlStr = "" , DateStr = "";
-		String L_RecId = "" , L_Lotto = "";
+		String SqlStr = "", DateStr = "";
+		String L_RecId = "", L_Lotto = "";
 		System.out.println("day> " + day);
 		System.out.println("orgid> " + orgid);
 		try {
@@ -575,17 +513,15 @@ public class LottoDAOImpl implements LottoDAO {
 				L_RecId = rs.getString("L_RecId");
 				L_Lotto = rs.getString("L_Lotto");
 			}
-			
-			if(!day.equals("")) {
+
+			if (!day.equals("")) {
 				DateStr = " AND ( B_RecDate BETWEEN '" + day + " 00:00:00'" + " AND '" + day + " 23:59:59' )";
 			}
-			if(L_RecId.equals("")) {
-				SqlStr = " SELECT * FROM lo_bet WHERE B_BuildOrg = " + orgid
-						+ DateStr
-						+ " ORDER BY B_RecDate DESC";
+			if (L_RecId.equals("")) {
+				SqlStr = " SELECT * FROM lo_bet WHERE B_BuildOrg = " + orgid + DateStr + " ORDER BY B_RecDate DESC";
 				ReSetResult(SqlStr);
 				System.out.println("SqlStr> " + SqlStr);
-				while(rs.next()) {
+				while (rs.next()) {
 					vo = new LottoVO();
 					vo.setBet(rs.getString("B_Bet"));
 					vo.setWin(rs.getString("B_Win"));
@@ -593,13 +529,12 @@ public class LottoDAOImpl implements LottoDAO {
 					vo.setRecDate(rs.getTimestamp("B_RecDate"));
 					list.add(vo);
 				}
-			}else {
+			} else {
 				SqlStr = " SELECT lo_bet.* ,L_Lotto FROM lo_bet ,lo_main WHERE lo_main.L_RecId=lo_bet.B_LRecId"
-						+ DateStr
-						+ "AND B_BuildOrg = " + orgid + " ORDER BY B_RecDate DESC";
+						+ DateStr + "AND B_BuildOrg = " + orgid + " ORDER BY B_RecDate DESC";
 				ReSetResult(SqlStr);
 				System.out.println("SqlStr> " + SqlStr);
-				while(rs.next()) {
+				while (rs.next()) {
 					vo = new LottoVO();
 					vo.setLotto(rs.getString("L_Lotto"));
 					vo.setBet(rs.getString("B_Bet"));
@@ -624,10 +559,10 @@ public class LottoDAOImpl implements LottoDAO {
 		DescribeVO vo = null;
 		String SqlStr = "";
 		try {
-			SqlStr = " SELECT D_Content ,D_NNStr ,D_NumberStr ,D_RecDate FROM lo_describe WHERE D_Type = 3 AND D_BuildOrg = " + OrgId
-				   + " ORDER BY D_RecId DESC";
+			SqlStr = " SELECT D_Content ,D_NNStr ,D_NumberStr ,D_RecDate FROM lo_describe WHERE D_Type = 3 AND D_BuildOrg = "
+					+ OrgId + " ORDER BY D_RecId DESC";
 			ReSetResult(SqlStr);
-			while(rs.next()) {
+			while (rs.next()) {
 				vo = new DescribeVO();
 				vo.setContent(rs.getString("D_Content"));
 				vo.setNnstr(rs.getString("D_NNStr"));
@@ -644,7 +579,7 @@ public class LottoDAOImpl implements LottoDAO {
 	}
 
 	@Override
-	public void batchRandomBuy(Integer OrgId ,List list) {
+	public void batchRandomBuy(Integer OrgId, List list) {
 		LinkToMySQL();
 		String today = date.ToDay();
 		PreparedStatement pstmt = null;
@@ -673,7 +608,7 @@ public class LottoDAOImpl implements LottoDAO {
 			}
 			SqlStr = "INSERT INTO lo_bet (B_LRecId ,B_Bet ,B_BuildOrg) VALUES (?,?,?)";
 			pstmt = (PreparedStatement) conn.prepareStatement(SqlStr);
-			for(int i=0 ;i<list.size();i++) {
+			for (int i = 0; i < list.size(); i++) {
 				pstmt.setInt(1, L_RecId);
 				pstmt.setString(2, "," + list.get(i) + ",");
 				pstmt.setInt(3, OrgId);

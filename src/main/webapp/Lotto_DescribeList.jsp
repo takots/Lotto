@@ -6,31 +6,6 @@
 <%@ page import="com.common.Date"%>
 <%@ page import="com.lotto.model.DescribeVO"%>
 <%@ page import="com.lotto.model.LottoService,com.lotto.model.LottoServiceImpl"%>
-<style>
-	.describeCards{
-		padding : 10px;
-		background-color: black;
-		color: white;
-		border-radius: 15px;
-	}
-	.desdiv1{
-		text-align: center;
-		color: #6009f0;
-	}
-	.desdiv2{
-		text-align: center;
-		color: #6009f0;
-	}
-	.desdiv3{
-		text-align: center;
-		color: #6009f0;
-	}
-	.desdiv4{
-		text-size: 10px;
-		text-align: center;
-		color: #6009f0;
-	}
-</style>
 <% 
 Html Html = new Html();
 out.print(Html.Start("描述列表")); 

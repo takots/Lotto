@@ -1,7 +1,5 @@
 package com.user.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -44,7 +42,7 @@ public class UserServlet extends HttpServlet {
 			String password = request.getParameter("pwd");
 			jsonobject.put("email", crypt.encodeBase64(email));
 			jsonobject.put("pwd", crypt.encodeBase64(password));
-			vo = service.LOGIN(jsonobject);
+			vo = service.loginnn(jsonobject);
 			if (vo.getOrgId() != null) {
 				isLogin = true;
 			}
@@ -66,21 +64,21 @@ public class UserServlet extends HttpServlet {
 			vo.setOrgName(username);
 			vo.setEmail(crypt.encodeBase64(email));
 			vo.setPassword(crypt.encodeBase64(password));
-			if(service.NameIsExist(username)) {
+			if(service.nameExist(username)) {
 				jsonobject.put("nameexist"    ,true);
 				jsonobject.put("errormsg" ,"\"" + username + "\" this name 已存在，是否改成其他名稱？");
 				out.print(jsonobject);
 				jsonobject.clear();
 				return;
 			}
-			if(service.EmailIsExist(crypt.encodeBase64(email))) {
+			if(service.emailExist(crypt.encodeBase64(email))) {
 				jsonobject.put("emailexist"    ,true);
 				jsonobject.put("errormsg" ,"\"" + email + "\" this email 已存在");
 				out.print(jsonobject);
 				jsonobject.clear();
 				return;
 			}
-			if(!service.EmailFormat(email)) {
+			if(!service.emailFormat(email)) {
 				jsonobject.put("format"   ,false);
 				jsonobject.put("errormsg" ,"\"" + email + "\" this email 格式錯誤，檢查是否少了 @");
 				out.print(jsonobject);
@@ -95,7 +93,7 @@ public class UserServlet extends HttpServlet {
 			}else {
 				vo.setAdmin(false);
 			}
-			out.print(service.SIGNUP(vo));
+			out.print(service.signuppp(vo));
 			jsonobject.clear();
 		}
 	}

@@ -5,8 +5,8 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 public interface UserDAO {
-	public boolean selectUserName(String username);
-	public boolean selectUserEmail(String email);
-	public boolean userSignUp(UserVO vo);
-	public UserVO userLogin(JSONObject jsonobject);
+	public boolean findByUsername(String username);
+	public boolean findByUseremail(String email);
+	public boolean signUp(UserVO vo);
+	public UserVO  login(JSONObject jsonobject);
 }

@@ -77,6 +77,11 @@ out.print("英數規則： 大小寫不拘 A:1 ,B:2 ,... ,Z:26<br>");
 </div>
 <div class="" id="v-pills-englishToNumber"></div>
 <%
+String arr[] = {"odd 奇數","even 偶數","倍數 multiple of 3","prime 質數"};
+for(int i = 0 ;i<4 ;i++) out.print(Html.Createcheckbox_Bookstrap5("remove"+(i+1) ,(i+1) ,arr[i]));
+%>
+<button class="btn btn-outline-secondary" id="v-pills-removenum-tab" onclick="RemoveFunc()">排除<br>remove</button>
+<%
 out.print(Html.createLottoBtn()); 
 %>
 <div class="" id="v-pills-resultBuy"></div>

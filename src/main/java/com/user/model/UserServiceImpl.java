@@ -13,27 +13,27 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
-	public boolean SIGNUP(UserVO vo) {
-		return dao.userSignUp(vo);
+	public boolean signuppp(UserVO vo) {
+		return dao.signUp(vo);
 	}
 
 	@Override
-	public UserVO LOGIN(JSONObject jsonobject) {
-		return dao.userLogin(jsonobject);
+	public UserVO loginnn(JSONObject jsonobject) {
+		return dao.login(jsonobject);
 	}
 
 	@Override
-	public boolean NameIsExist(String username) {
-		return dao.selectUserName(username);
+	public boolean nameExist(String username) {
+		return dao.findByUsername(username);
 	}
 
 	@Override
-	public boolean EmailIsExist(String email) {
-		return dao.selectUserEmail(email);
+	public boolean emailExist(String email) {
+		return dao.findByUseremail(email);
 	}
 
 	@Override
-	public boolean EmailFormat(String email) {
+	public boolean emailFormat(String email) {
 		String regex = "^\\w{1,63}@[a-zA-Z0-9]{2,63}\\.[a-zA-Z]{2,63}(\\.[a-zA-Z]{2,63})?$";
 		Pattern pattern = Pattern.compile(regex);
 		return pattern.matcher(email).find();

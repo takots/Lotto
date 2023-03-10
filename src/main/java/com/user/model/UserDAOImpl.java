@@ -62,7 +62,7 @@ public class UserDAOImpl implements UserDAO{
 	}
 	
 	@Override
-	public boolean userSignUp(UserVO vo) {
+	public boolean signUp(UserVO vo) {
 		LinkToMySQL();
 		boolean boo = false;
 		PreparedStatement pstmt = null;
@@ -101,7 +101,7 @@ public class UserDAOImpl implements UserDAO{
 	}
 
 	@Override
-	public UserVO userLogin(JSONObject jsonobject) {
+	public UserVO login(JSONObject jsonobject) {
 		LinkToMySQL();
 		UserVO vo = new UserVO();
 		String SqlStr = "";
@@ -127,7 +127,7 @@ public class UserDAOImpl implements UserDAO{
 	}
 
 	@Override
-	public boolean selectUserName(String username) {
+	public boolean findByUsername(String username) {
 		LinkToMySQL();
 		boolean boo = false;
 		String SqlStr = "";
@@ -146,7 +146,7 @@ public class UserDAOImpl implements UserDAO{
 	}
 
 	@Override
-	public boolean selectUserEmail(String email) {
+	public boolean findByUseremail(String email) {
 		LinkToMySQL();
 		boolean boo = false;
 		String SqlStr = "";

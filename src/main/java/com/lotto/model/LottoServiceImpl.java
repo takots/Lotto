@@ -1,5 +1,7 @@
 package com.lotto.model;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,12 +19,16 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import com.common.GoogleTranslate;
+
+import lombok.val;
+
 import com.common.Date;
 import com.common.Func;
 
 public class LottoServiceImpl implements LottoService {
 	public static String ran; // 隨機產生數字
 	public static String dre; // 解夢
+	public static String googlennum; // google + 英轉數
 	public static String ennum; // 英轉數
 	private LottoDAO dao;
 	Func func = new Func();
@@ -48,17 +54,17 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public String TODAY() {
+	public String todayLotto() {
 		String str = randomSixNumber();
-		return dao.todayLotto(str);
+		return dao.createTodayLotto(str);
 	}
 
 	@Override
-	public String TODAYSPECIAL() {
+	public String todaySpecial() {
 		String str = randomSixNumber();
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		str = dao.todayLotto(str);
-		str = str.substring(1, str.length()-1);
+		str = dao.createTodayLotto(str);
+		str = str.substring(1, str.length() - 1);
 		String arr[] = str.split(",");
 		for (int i = 1; i < 50; i++)
 			list.add(i);
@@ -69,17 +75,17 @@ public class LottoServiceImpl implements LottoService {
 		Collections.shuffle(list); // 打亂
 		str = list.get(0).toString();
 		System.out.println("today special> " + str);
-		dao.todaySpecial(str);
+		dao.createTodaySpecial(str);
 		return str;
 	}
 
 	@Override
-	public boolean BUY(Integer OrgId, String str) {
-		return dao.buyLotto_v2(OrgId, str);
+	public boolean buyLotto(Integer OrgId, String str) {
+		return dao.insertUserBuyLotto(OrgId, str);
 	}
 
 	@Override
-	public JSONObject buySixNumber(String str) {
+	public JSONObject isSixNumber(String str) {
 		int count = 0;
 		JSONObject jsonobject = new JSONObject();
 		if (!str.equals("")) {
@@ -101,135 +107,123 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public String SELECTODAY() {
-		return dao.selectTodayLotto();
+	public String selectTodayLotto() {
+		return dao.queryTodayLotto();
 	}
 
 	@Override
-	public boolean TIMEUP() throws ParseException {
+	public boolean timeup() throws ParseException {
 		Date date = new Date();
 		if (date.WhatTime("20:00:00")) {
 			System.out.println("八點了");
-			GOLOTTERY();
+			goLotto();
 		}
 		System.out.println("還沒八點");
 		return date.WhatTime("20:00:00");
 	}
 
 	@Override
-	public void GOLOTTERY() {
-		dao.timeupGoLotto();
+	public void goLotto() {
+		dao.claimLotto();
 	}
 
 	@Override
-	public void countHowManyNumbers() {
-		dao.letsCount();
+	public void countNumbers() {
+		dao.updateLottoCount();
 	}
 
 	@Override
-	public JSONObject replenishWithRandom(String sessChooseBall) {
-		String str = "";
-		ran = "";
+	public String replenishWithRandom(String sessChooseBall) {
+		String str = "", sess = func.reSort(sessChooseBall);
+		String str2 = "";
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		ArrayList<Integer> list2 = new ArrayList<Integer>();
-		Map<String, String> map = new HashMap<>();
 		for (int i = 1; i < 50; i++)
 			list.add(i);
 		// 單次選取超出6個 會有錯
-		int num = 0;
 		// session 存的是單次選取的值 ,這邊的行為是去除已存在
-		System.out.println("------- ReplenishWithRandom --------");
-		System.out.println("sessChooseBall> " + sessChooseBall);
-		if (sessChooseBall.equals(","))
-			sessChooseBall = "";
-		if (!sessChooseBall.equals("")) {
-			if (sessChooseBall.startsWith(","))
-				sessChooseBall = sessChooseBall.substring(1, sessChooseBall.length());
-			if (sessChooseBall.endsWith(","))
-				sessChooseBall = sessChooseBall.substring(0, sessChooseBall.length() - 1);
+		int num = 0;
+		if (!sess.equals(""))
+			str2 += sess + ",";
+		if (dre != null)
+			str2 += dre + ",";
+		if (googlennum != null)
+			str2 += googlennum + ",";
+		if (ennum != null)
+			str2 += ennum + ",";
 
-			String arr[] = sessChooseBall.split(",");
-			System.out.println("arr> " + Arrays.toString(arr));
+		str2 = func.reSort(str2);
+		str2 = str2.substring(1, str2.length());
+		String arr[] = str2.split(",");
+		System.out.println("str2> " + str2);
+		System.out.println("arr> " + Arrays.toString(arr));
+		System.out.println("arr.length> " + arr.length);
+		System.out.println("list4> " + list.toString());
+
+		if (arr.length < 6) {
 			for (int i = 0; i < arr.length; i++) {
 				num++;
 				list.remove(Integer.parseInt((arr[i])) - (i + 1));
 			}
-		}
-		System.out.println(list.toString());
-
-		if (num < 6) {
 			Collections.shuffle(list); // 打亂
 			for (int i = 1; i <= 6 - num; i++)
 				list2.add(list.get(i));
 			Collections.sort(list2); // 排序
 			for (int i = 0; i < list2.size(); i++)
 				str += list2.get(i) + ",";
-			str = str.substring(0, str.length() - 1);
-			str = "," + str;
+			ran = str;
+			str2 += "," + str;
 		}
-		ran = str + ",";
-//		sysout("chooseBall> " + chooseBall);
-		map.put("randomBall", str);
-		map.put("chooseBall", "," + sessChooseBall);
-		map.put("dreamBall" , dre);
-		map.put("ennumBall" , ennum);
-		JSONObject response = new JSONObject(map);
-		return response;
+		System.out.println("str2> " + str2);
+		System.out.println("str> " + str);
+		return str2;
 	}
 
 	@Override
-	public JSONObject saveSessionBall(HttpSession session, String ball, String calculate) {
-		Map<String, String> map = new HashMap<>();
-		System.out.println("-------- SaveSessionBall --------");
-		System.out.println("ran> " + ran);
+	public void saveSessionBall(HttpSession session, String ball, String calculate) {
 		// 存給 LotteryServlet_UserRandom 隨機產生 n 個 把已選的去除掉
-		String sesscountBall = "", sesschooseBall = "";
+		String count = "", choose = "";
 		Object chooseball = session.getAttribute("ChooseBall");
 		if (chooseball != null) {
-			sesschooseBall = chooseball.toString();
+			choose = chooseball.toString();
 		}
-		if (!sesschooseBall.startsWith(",")) {
-			sesschooseBall = "," + sesschooseBall;
+//		System.out.println("choose> " + choose);
+		// 如果數字前面沒有逗號 ,移除的時候會無法移除
+		if (!choose.startsWith(",")) { 
+			choose = "," + choose;
 		}
+		
 		// 按完會 新增(plus) 或 移除(minus) 號碼
 		ball = ball + ",";
 		if (calculate.equals("plus")) {
-			session.setAttribute("ChooseBall", sesschooseBall + ball);
+			session.setAttribute("ChooseBall", choose + ball);
 		} else if (calculate.equals("minus")) {
 			ball = "," + ball;
 			System.out.println("ball> " + ball);
-			sesschooseBall = sesschooseBall.replace(ball, ","); // 取消要去掉
-			session.setAttribute("ChooseBall", sesschooseBall);
-			ran = ran.replace(ball, ",");
-			dre = dre.replace(ball, ",");
-			ennum = ennum.replace(ball, ",");
+			choose = choose.replace(ball, ","); // 取消要去掉
+			session.setAttribute("ChooseBall", choose);
 		}
 		chooseball = session.getAttribute("ChooseBall");
 		if (chooseball != null) {
-			sesschooseBall = chooseball.toString();
+			choose = chooseball.toString();
 		}
-		if (sesschooseBall.endsWith(",")) {
-			session.setAttribute("CountBall",
-					sesschooseBall.substring(0, sesschooseBall.length() - 1).split(",").length);
-		} else if (sesschooseBall.equals(",")) {
+		if(choose.equals(",")) choose = "";
+		// 計算目前自選號有幾顆
+		if(choose.equals("")) { 
 			session.setAttribute("CountBall", 0);
+		}else {
+			int j=0;
+			for(String s : choose.split(",")) {
+				if(!s.equals("")) j++;
+			}
+			session.setAttribute("CountBall", j);
+			Object countball = session.getAttribute("CountBall");
+			if (countball != null) {
+				count = countball.toString();
+			}
 		}
-
-		Object countball = session.getAttribute("CountBall");
-		if (countball != null) {
-			sesscountBall = countball.toString();
-		}
-		System.out.println("sesscount> " + sesscountBall);
-		System.out.println("sesschooseBall> " + sesschooseBall);
-		if (ran != null) {
-			map.put("randomBall", ran);
-		}
-		map.put("randomBall", ran);
-		map.put("chooseBall", sesschooseBall);
-		map.put("dreamBall" , dre);
-		map.put("ennumBall" , ennum);
-		JSONObject response = new JSONObject(map);
-		return response;
+//		System.out.println("choose2> " + choose);
+//		System.out.println("length> " + count);
 	}
 
 	@Override
@@ -244,7 +238,7 @@ public class LottoServiceImpl implements LottoService {
 		}
 		bufferedReader.close();
 		fileReader.close();
-		dao.SaveDreamData(str);
+		dao.saveDreamData(str);
 	}
 
 	@Override
@@ -255,7 +249,7 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public DescribeVO enTONum(Integer type, String str ,Integer OrgId) {
+	public DescribeVO englishToNumber(Integer type, String str, Integer OrgId) {
 		DescribeVO vo = new DescribeVO();
 		String str0 = str;
 		String D_NNStr = "";
@@ -264,7 +258,7 @@ public class LottoServiceImpl implements LottoService {
 		char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 		for (int i = 0; i < alphabet.length; i++) {
 			map.put(alphabet[i] + "", i + 1 + "");
-			map.put(i + 1 + "" ,alphabet[i] + "");
+			map.put(i + 1 + "", alphabet[i] + "");
 		}
 		String result = "";
 		for (String s : str.split("")) {
@@ -287,8 +281,12 @@ public class LottoServiceImpl implements LottoService {
 		vo.setNumberStr(result);
 		vo.setBuildOrg(OrgId);
 //		System.out.println(vo);
-		dao.SaveEnNum(vo);
-		ennum = result;
+		dao.saveEnglishAndNumber(vo);
+		if (type == 1) {
+			googlennum = result;
+		} else if (type == 2) {
+			ennum = result;
+		}
 		map.clear();
 		return vo;
 	}
@@ -300,8 +298,8 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public List<LottoVO> selectBetWhichDay(String today ,String orgid) {
-		return dao.findAllBet(today ,orgid);
+	public List<LottoVO> selectBetWhichDay(String today, String orgid) {
+		return dao.findAllBet(today, orgid);
 	}
 
 	@Override
@@ -310,12 +308,79 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public List<String> FastRandomBuy(Integer OrgId ,Integer x) {
+	public List<String> fastRandomBuy(Integer OrgId, Integer x) {
 		List<String> list = new ArrayList<>();
-		for(int i=1 ;i<=x ;i++) {
+		for (int i = 1; i <= x; i++) {
 			list.add(randomSixNumber());
 		}
 		dao.batchRandomBuy(OrgId, list);
 		return list;
+	}
+
+	@Override
+	public JSONObject removeNumber(String str1, String str2) {
+		Map<String, String> map = new HashMap<>();
+//		System.out.println("str1> " + str1);
+//		System.out.println("str2> " + str2);
+		String str = "";
+		if (!str1.equals("") && !str2.equals("")) {
+			str1 = "," + str1;
+			for (String s : str1.split(",")) {
+				if (!s.equals("")) {
+					int i = Integer.parseInt(s);
+					// 排除奇數
+					if (str2.indexOf("1") > -1) {
+						if (i % 2 == 1) {
+							str1 = str1.replace("," + s + ",", ",");
+							str += s + ",";
+						}
+					}
+
+					// 排除偶數
+					if (str2.indexOf("2") > -1) {
+						if (i % 2 == 0) {
+							str1 = str1.replace("," + s + ",", ",");
+							str += s + ",";
+						}
+					}
+
+					// 排除3的倍數
+					if (str2.indexOf("3") > -1) {
+						if (i % 3 == 0) {
+							str1 = str1.replace("," + s + ",", ",");
+							str += s + ",";
+						}
+					}
+
+					// 排除質數
+					if (str2.indexOf("4") > -1) {
+						boolean prime = true;
+						for (int n = 2; n < i; n++) {
+							if (i % n == 0) {
+								prime = false; // 非質數傳false
+								break;
+							}
+						}
+						if (prime) {
+							str1 = str1.replace("," + s + ",", ",");
+							str += s + ",";
+						}
+					}
+				}
+			}
+		}
+		if (str.lastIndexOf(",") > -1)
+			str = str.substring(0, str.lastIndexOf(","));
+		if (str1.equals(",")) {
+			str1 = "";
+		} else {
+			str1 = str1.substring(1, str1.length() - 1);
+		}
+		map.put("remove", str);
+		map.put("keep", str1);
+		JSONObject response = new JSONObject(map);
+//		System.out.println("str> " + str);
+//		System.out.println("str1> " + str1);
+		return response;
 	}
 }

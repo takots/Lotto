@@ -10,7 +10,7 @@ boolean isAdmin = false;
 if(session.getAttribute("amiadmin") != null) {
 	isAdmin = Boolean.parseBoolean(session.getAttribute("amiadmin").toString());
 	if(isAdmin) {
-		str = service.SELECTODAY();
+		str = service.selectTodayLotto();
 		if(str.equals("#")){
 			str = "";
 		}else if(!str.equals("") && str.indexOf("#")>-1){
