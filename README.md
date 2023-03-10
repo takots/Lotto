@@ -173,3 +173,18 @@ var data = {
    value: $('#v-pills-fastbuy-tab').val()
  }
 ```
+
+## controller
+- action: "LogIn"
+  - step1: getParameter + base64
+  - step2: call service
+  - step3: service return vo
+  - step4: isAdmin? (session)
+  - step4: response boolean isLogin
+
+- action: "SignUp"
+  - step1: getParameter + base64
+  - step2: verify data (name ,email)
+  - step3: user or admin
+  - step4: response boolean is signup or not
+
