@@ -189,6 +189,15 @@ public class Html {
 		return stringbuffer.toString();
 	}
 	
+	public String Createcheckbox_Bookstrap5(String id ,Integer value ,String labelname) {
+		StringBuffer stringbuffer = new StringBuffer();
+		stringbuffer.append("<div class=\"form-check form-check-inline\">");
+		stringbuffer.append(	"<input class=\"form-check-input\" type=\"checkbox\" id=\""+id+"\" name=\"removevalue\" value=\""+value+"\">");
+		stringbuffer.append(	"<label class=\"form-check-label\" for=\""+id+"\">"+labelname+"</label>");
+		stringbuffer.append("</div>");
+		return stringbuffer.toString();
+	}
+	
 	public String CreateMsg(String str ,String str2 ,String str3) {
 		StringBuffer stringbuffer = new StringBuffer();
 		stringbuffer.append("<div class=\"alert alert-success\">");
