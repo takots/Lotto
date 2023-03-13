@@ -188,3 +188,7 @@ var data = {
   - step3: user or admin
   - step4: response boolean is signup or not
 
+- action: "Today"
+  - step1: create today number (6+1)
+  - step2: 兌獎
+  - step3: 中幾個號碼
