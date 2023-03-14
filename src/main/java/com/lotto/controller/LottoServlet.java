@@ -38,8 +38,8 @@ public class LottoServlet extends HttpServlet {
 		// 產生今日樂透
 		if(action.equals("Today")) {
 			Map<String , String> map = new HashMap<>();
-			map.put("lotto", service.todayLotto());
-			map.put("special", service.todaySpecial());
+			map.put("lotto",   service.generateTodayLotto());
+			map.put("special", service.generateTodaySpecial());
 			JSONObject json = new JSONObject(map);
 			out.print(json); // 今天樂透數據
 //			service.goLotto(); // 兌獎
@@ -57,17 +57,12 @@ public class LottoServlet extends HttpServlet {
 		
 		// 使用者點選後可以補齊 6 個數字
 		if(action.equals("UserRandomBall")) {
-			String sesschooseBall = "";
-			Object chooseball = session.getAttribute("ChooseBall");
-			if(chooseball != null) {
-				sesschooseBall = chooseball.toString();
-			}
-			System.out.println("sesschooseBall> " + sesschooseBall);
-			out.print(service.replenishWithRandom(sesschooseBall));
+			String value = request.getParameter("value");
+			out.print(service.replenishWithRandom(value));
 		}
 		
 		// 周公解夢
-		if(action.equals("CallTheGodOfWealth")) {
+		if(action.equals("DreamToNumber")) {
 			int OrgId = 0;
 			if (session.getAttribute("OrgId") != null) {
 				OrgId = (Integer)session.getAttribute("OrgId");
@@ -80,23 +75,21 @@ public class LottoServlet extends HttpServlet {
 		}
 		
 		if(action.equals("EnTransToNum")) {
-			String str = "" , func = "";
+			String str = "" , type = "";
 			str = request.getParameter("wordtotransNum");
-			func = request.getParameter("func");
+			type = request.getParameter("type");
 			int OrgId = 0;
 			if (session.getAttribute("OrgId") != null) {
 				OrgId = (Integer)session.getAttribute("OrgId");
 			}
-			if(func.equals("GOOGLE")) { // google翻譯後轉成英文再轉成數字
+			if(type.equals("GOOGLE")) { // google翻譯後轉成英文再轉成數字
 				try {
-					DescribeVO vo = service.englishToNumber(1 ,service.googleTranslate(str) ,OrgId); 
-					out.print(vo.getNumberStr()+"#"+vo.getContent());
+					out.print(service.englishToNumber(1 ,service.googleTranslate(str) ,OrgId));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}else if(func.equals("ENNUM")) {
-				DescribeVO vo = service.englishToNumber(2 ,str ,OrgId); 
-				out.print(vo.getNumberStr());
+			}else if(type.equals("ENNUM")) {
+				out.print(service.englishToNumber(2 ,str ,OrgId));
 			}
 		}
 		

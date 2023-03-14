@@ -83,7 +83,7 @@ public class UserDAOImpl implements UserDAO{
 				pstmt.close();
 				boo = true;
 			}else {
-				System.out.println("a2");
+				System.out.println("a0");
 				pstmt = (PreparedStatement) conn.prepareStatement("insert into Org (OrgName ,Email ,PWD) values (?,?,?)");
 				pstmt.setString(1, name);
 				pstmt.setString(2, email);
@@ -111,7 +111,6 @@ public class UserDAOImpl implements UserDAO{
 		try {
 			SqlStr = "select OrgId ,OrgName ,isAdmin from Org where Email='"+email +"' and PWD='"+pwd+"'";
 			ReSetResult(SqlStr);
-			sysout("dao SqlStr> " + SqlStr);
 			if(rs.next()) {
 				vo.setOrgId(rs.getInt("OrgId"));
 				vo.setOrgName(rs.getString("OrgName"));

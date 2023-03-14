@@ -17,6 +17,6 @@ public class Func {
 			for(Integer s : sortedSet) str += "," + s ;
 			sortedSet.clear();
 		}
-		return str;
+		return str; // ex: ,5,7,11,13,23
 	}
 }

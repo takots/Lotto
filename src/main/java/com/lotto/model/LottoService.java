@@ -12,10 +12,10 @@ public interface LottoService {
 	public String randomSixNumber();
 
 	// 產生今日樂透號碼 01~49
-	public String todayLotto();
+	public String generateTodayLotto();
 
 	// 產生今日特別號 01~08
-	public String todaySpecial();
+	public String generateTodaySpecial();
 
 	// 買一組號碼
 	public boolean buyLotto(Integer OrgId, String str);
@@ -48,7 +48,7 @@ public interface LottoService {
 	public String googleTranslate(String str) throws Exception;
 
 	// 將英文名詞轉成數字
-	public DescribeVO englishToNumber(Integer type, String str, Integer OrgId);
+	public JSONObject englishToNumber(Integer type, String str, Integer OrgId);
 
 	// 一段描述比對解夢號碼
 	public String dreamNumber(Integer OrgId, String str);

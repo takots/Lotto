@@ -54,13 +54,13 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public String todayLotto() {
+	public String generateTodayLotto() {
 		String str = randomSixNumber();
 		return dao.createTodayLotto(str);
 	}
 
 	@Override
-	public String todaySpecial() {
+	public String generateTodaySpecial() {
 		String str = randomSixNumber();
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		str = dao.createTodayLotto(str);
@@ -133,50 +133,33 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public String replenishWithRandom(String sessChooseBall) {
-		String str = "", sess = func.reSort(sessChooseBall);
-		String str2 = "";
+	public String replenishWithRandom(String str) {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		ArrayList<Integer> list2 = new ArrayList<Integer>();
-		for (int i = 1; i < 50; i++)
-			list.add(i);
-		// 單次選取超出6個 會有錯
-		// session 存的是單次選取的值 ,這邊的行為是去除已存在
+		for (int i = 1; i < 50; i++) list.add(i);
 		int num = 0;
-		if (!sess.equals(""))
-			str2 += sess + ",";
-		if (dre != null)
-			str2 += dre + ",";
-		if (googlennum != null)
-			str2 += googlennum + ",";
-		if (ennum != null)
-			str2 += ennum + ",";
-
-		str2 = func.reSort(str2);
-		str2 = str2.substring(1, str2.length());
-		String arr[] = str2.split(",");
-		System.out.println("str2> " + str2);
-		System.out.println("arr> " + Arrays.toString(arr));
-		System.out.println("arr.length> " + arr.length);
-		System.out.println("list4> " + list.toString());
+		String arr[] = str.split(",");
 
 		if (arr.length < 6) {
+			// str 是選取的值 ,這邊的行為是去除已存在
 			for (int i = 0; i < arr.length; i++) {
 				num++;
 				list.remove(Integer.parseInt((arr[i])) - (i + 1));
 			}
 			Collections.shuffle(list); // 打亂
-			for (int i = 1; i <= 6 - num; i++)
+			// 剩幾個號碼要產生
+			for (int i = 1; i <= 6 - num; i++) {
 				list2.add(list.get(i));
+			}
 			Collections.sort(list2); // 排序
-			for (int i = 0; i < list2.size(); i++)
+			str = ""; // 清除
+			for (int i = 0; i < list2.size(); i++) {
 				str += list2.get(i) + ",";
+			}
 			ran = str;
-			str2 += "," + str;
+			str += "," + str;
 		}
-		System.out.println("str2> " + str2);
-		System.out.println("str> " + str);
-		return str2;
+		return str;
 	}
 
 	@Override
@@ -249,46 +232,50 @@ public class LottoServiceImpl implements LottoService {
 	}
 
 	@Override
-	public DescribeVO englishToNumber(Integer type, String str, Integer OrgId) {
+	public JSONObject englishToNumber(Integer type, String str, Integer OrgId) {
 		DescribeVO vo = new DescribeVO();
 		String str0 = str;
-		String D_NNStr = "";
+		/* 1. 使用 StringBuilder 替代 String 串接：在每次將 String 串接時，Java 都會建立一個新的 String 物件，
+		 * 因此當需要將多個 String 串接時，使用 StringBuilder 可以有效地減少記憶體使用量和提升效能
+		 * 2. equals 方法比較字元是否相等這種方式比較慢 ,使用 charAt 方法可以更快速地取得字串中的字元
+		 * */
+		StringBuilder result = new StringBuilder();
+		String nnstr = "";
 		str = str.toLowerCase();
-		Map<String, String> map = new HashMap<>();
+		JSONObject jsonobject = new JSONObject();
 		char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 		for (int i = 0; i < alphabet.length; i++) {
-			map.put(alphabet[i] + "", i + 1 + "");
-			map.put(i + 1 + "", alphabet[i] + "");
+            char c = alphabet[i];
+            for (int j = 0; j < str.length(); j++) {
+                if (str.charAt(j) == c) {
+                    if (result.length() > 0) {
+                        result.append(",");
+                    }
+                    result.append(i + 1);
+                }
+            }
 		}
-		String result = "";
-		for (String s : str.split("")) {
-			if (map.containsKey(s)) {
-				result += "," + map.get(s);
-			}
+		str = func.reSort(result.toString());
+		for(String s : str.split(",")) {
+            if(!s.equals("")) nnstr += "," + s +":"+ alphabet[Integer.parseInt(s)-1];
 		}
-		if (result.endsWith(",")) {
-			result = result.substring(0, result.length() - 1);
-		}
-		result = func.reSort(result);
-		for (String s : result.split(",")) {
-			if (map.containsKey(s)) {
-				D_NNStr += "," + s + ":" + map.get(s);
-			}
-		}
+		if(!nnstr.equals("")) nnstr = nnstr + ",";
+		
 		vo.setType(type);
 		vo.setContent(str0);
-		vo.setNnstr(D_NNStr);
-		vo.setNumberStr(result);
+		vo.setNnstr(nnstr);
+		vo.setNumberStr(str);
 		vo.setBuildOrg(OrgId);
-//		System.out.println(vo);
 		dao.saveEnglishAndNumber(vo);
+		
+		jsonobject.put("content", str0);
+		jsonobject.put("numberStr", str);
 		if (type == 1) {
-			googlennum = result;
+			googlennum = str;
 		} else if (type == 2) {
-			ennum = result;
+			ennum = str;
 		}
-		map.clear();
-		return vo;
+		return jsonobject;
 	}
 
 	@Override
